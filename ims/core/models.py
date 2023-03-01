@@ -38,11 +38,16 @@ class StockItem(models.Model):
 
 
 class Inventory(models.Model):
-    item = models.ForeignKey(StockItem, on_delete=models.CASCADE)
+    stockitem = models.ForeignKey(StockItem, on_delete=models.CASCADE, related_name="inventory")
     quantity = models.IntegerField()
 
-    def get_remaining_quantity(self):
-        return "1"
+    @property
+    def remaining_quantity(self):
+        ordered_items = OrderStockItem.objects.filter(
+            stockitem=self.stockitem
+        ).values_list("quantity", flat=True)
+        used_quantity = sum(list(ordered_items))
+        return self.quantity - used_quantity
 
     class Meta:
         db_table = "inventory"  
@@ -71,5 +76,5 @@ class Order(models.Model):
 
 class OrderStockItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    items = models.ForeignKey(StockItem, on_delete=models.CASCADE)
+    stockitem = models.ForeignKey(StockItem, on_delete=models.CASCADE)
     quantity = models.IntegerField() 

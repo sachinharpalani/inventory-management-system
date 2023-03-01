@@ -1,5 +1,5 @@
 from django import forms
-from core.models import OrderStockItem
+from core.models import OrderStockItem, Order
 from core.constants import TransactionMode
 
 
@@ -10,3 +10,10 @@ class OrderStockItemForm(forms.Form):
     remarks = forms.Textarea()
     amount = forms.IntegerField()
     
+
+
+class OrderForm(forms.ModelForm):
+
+    class Meta:
+        model = Order
+        fields = "__all__"
