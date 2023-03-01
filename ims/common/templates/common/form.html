@@ -1,0 +1,107 @@
+{% extends "common/index.html" %}
+
+
+{% block main_content %}
+
+<!-- <div class="row">
+    <div class="mx-auto col-10 col-md-8 col-lg-6">
+        <form method="POST">
+            
+
+            {{form.as_p}}
+            <li><input type="submit" class="btn btn-primary btn-user btn-block" value="Submit"/></li>
+        </form>
+    </div>
+</div> -->
+            
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="customer_name">Customer Name</label>
+        <input type="text" class="form-control" id="customer_name" placeholder="Customer Name">
+      </div>
+      <div class="form-group col-md-6">
+        <label for="customer_number">Customer Number</label>
+        <input type="text" class="form-control" id="customer_number" placeholder="Customer Number">
+      </div>
+    </div>
+    <div class="form-group">
+        <label for="mode_of_payment">Mode of Payment</label>
+        <select class="form-control" id="mode_of_payment">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+        </select>
+      </div>
+    <div class="form-group">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Stock Items List</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Subgroup</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Balance Quantity</th>
+                            <th>Purchase Quanity</th>
+                            <th>Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item_detail in object_list %}
+                        <tr>
+                            <td>{{ item_detail.subgroup.group.name }}</td>
+                            <td>{{ item_detail.subgroup.name }}</td>
+                            <td>{{ item_detail.name }}</td>
+                            <td>{{ item_detail.price }}</td>
+                            <td>{{ item_detail.total_quantity }}</td>
+                            <td>{{ item_detail.balance_quantity }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+      <label for="inputAddress2">Address 2</label>
+      <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="inputCity">City</label>
+        <input type="text" class="form-control" id="inputCity">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="inputState">State</label>
+        <select id="inputState" class="form-control">
+          <option selected>Choose...</option>
+          <option>...</option>
+        </select>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="inputZip">Zip</label>
+        <input type="text" class="form-control" id="inputZip">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="gridCheck">
+        <label class="form-check-label" for="gridCheck">
+          Check me out
+        </label>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Sign in</button>
+  </form>
+
+{% endblock main_content %}
