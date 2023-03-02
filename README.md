@@ -160,3 +160,20 @@ Quit the server with CONTROL-C.
 ```
 
 If you see `Starting development server at http://127.0.0.1:8000/` this means our server is now hosted on localhost at port 8000. Now we can go to `localhost:8000` and browse the webapp.
+
+You will also need a user to be created to access the project first time.
+You can create a superuser as follows:
+
+```sh
+(env) ➜  ims git:(main) ✗ python3 manage.py createsuperuser
+Username (leave blank to use 'sachinharpalani'):
+Email address:
+Password:
+Password (again):
+This password is too short. It must contain at least 8 characters.
+This password is too common.
+Bypass password validation and create user anyway? [y/N]: y
+Superuser created successfully.
+```
+
+You can use this superuser to login and create more users as well.
