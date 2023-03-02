@@ -48,26 +48,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item_detail in stockitem_list %}
-                                <tr>
+                            {% for item_detail in stockitem_list %}
+                                {% with remaining_quantity=item_detail.inventory.first.remaining_quantity %}
+                                <tr {% if remaining_quantity <= 0 %} style="background-color: #E6E6FA" {% endif %}>
                                     <td>{{ item_detail.subgroup.group.name }}</td>
                                     <td>{{ item_detail.subgroup.name }}</td>
                                     <td>{{ item_detail.name }}</td>
                                     <td id="price_{{item_detail.id}}">{{ item_detail.price }}</td>
-                                    <td>{{ item_detail.inventory.first.remaining_quantity }}</td>
+                                    <td>{{ remaining_quantity }}</td>
                                     <td>
                                         <!-- <label for="purchase_quantity">Purchase Quanity</label> -->
-                                        <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Purchase Quanity">
+                                        <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Purchase Quanity" {% if remaining_quantity <= 0 %} disabled {% endif %}>
                                     </td>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="is_selected_{{item_detail.id}}" id="is_selected">
+                                            <input class="form-check-input" type="checkbox" name="is_selected_{{item_detail.id}}" id="is_selected" {% if remaining_quantity <= 0  %} disabled {% endif %}>
                                             <label class="form-check-label" for="is_selected">
                                             Select?
                                             </label>
                                     </div>
                                     </td>
                                 </tr>
+                                {% endwith %}
                             {% endfor %}
                             </tbody>
                         </table>
@@ -145,11 +147,16 @@
 
         // Disable Submit at start
         $(':input[type="submit"]').prop('disabled', true);
-    
+        
         // Logic to calculate total amount
         $('input[type=checkbox]').change(function() {
-            calculateTotalAmount()
+            calculateTotalAmount();
             toggleSubmitButton();
+        });
+
+        // Update amount whenever purchase quanity changes
+        $('[id^=purchase_quantity_]').change(function(){
+            calculateTotalAmount();
         });
     });
 </script>
