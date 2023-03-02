@@ -7,15 +7,17 @@ from core.models import StockItem, Order, OrderStockItem
 from core.constants import TransactionMode, OrderStatus
 from django.shortcuts import redirect
 from django_filters.views import FilterView
-from core.filters import OrderFilter
+from core.filters import OrderFilter, StockItemFilter
 from core.forms import OrderForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
 
-class StockItemListView(LoginRequiredMixin, ListView):
+class StockItemListView(LoginRequiredMixin, FilterView):
     model = StockItem
+    template_name = "core/stockitem_list.html"
+    filterset_class = StockItemFilter
 
 
 class OrderStockItemView(LoginRequiredMixin, TemplateView):
