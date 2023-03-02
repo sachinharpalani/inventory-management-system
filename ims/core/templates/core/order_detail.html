@@ -27,7 +27,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label for="status">Order Status</label>
-                    <p>{{ order.status }}</p>
+                    <p {% if is_order_valid is False %} style="background-color: #FF0000;" {% endif %}>{{ order.status }}</p>
                 </div>
             </div>
             <div class="form-row">

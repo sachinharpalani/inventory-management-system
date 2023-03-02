@@ -4,6 +4,7 @@ from django.db.models import TextChoices
 class OrderStatus(TextChoices):
     PENDING = "PENDING", "PENDING"
     COMPLETED = "COMPLETED", "COMPLETED"
+    INVALID = "INVALID", "INVALID"
 
 
 class TransactionStatus(TextChoices):

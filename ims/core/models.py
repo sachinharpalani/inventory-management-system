@@ -43,14 +43,15 @@ class Inventory(models.Model):
 
     @property
     def remaining_quantity(self):
-        ordered_items = OrderStockItem.objects.filter(
-            stockitem=self.stockitem
-        ).values_list("quantity", flat=True)
+        ordered_items = OrderStockItem.objects.exclude(
+            order__status=OrderStatus.INVALID
+        ).filter(stockitem=self.stockitem).values_list("quantity", flat=True)
         used_quantity = sum(list(ordered_items))
         return self.quantity - used_quantity
 
     class Meta:
         db_table = "inventory"  
+
 
 class Order(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)

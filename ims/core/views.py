@@ -66,6 +66,12 @@ class OrderStockItemView(LoginRequiredMixin, TemplateView):
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_order_valid"] = context["order"].status != OrderStatus.INVALID
+        return context
+    
+
 
 class OrderListView(LoginRequiredMixin, FilterView):
     model = Order
