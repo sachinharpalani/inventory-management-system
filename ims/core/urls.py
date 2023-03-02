@@ -4,7 +4,8 @@ from core.views import (
     OrderStockItemView, 
     OrderDetailView,
     OrderListView,
-    OrderModifyView
+    OrderModifyView,
+    OrderStockItemDeleteView
 )
 
 urlpatterns = [
@@ -21,5 +22,9 @@ urlpatterns = [
         OrderModifyView.as_view(), 
         name="modify_order"
     ),
-    
+    path(
+        'orderstockitem/<str:pk>/delete', 
+        OrderStockItemDeleteView.as_view(), 
+        name="delete_orderstockitem"
+    )
 ]

@@ -58,7 +58,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item_detail in order.orderstockitem_set.all %}
+                                {% for item_detail in orderstockitem_list %}
                                 <tr>
                                     <td>{{ item_detail.stockitem.subgroup.group.name }}</td>
                                     <td>{{ item_detail.stockitem.subgroup.name }}</td>

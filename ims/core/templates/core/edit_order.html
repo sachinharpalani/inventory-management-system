@@ -44,11 +44,12 @@
                                     <th>Price</th>
                                     <th>Balance Quantity</th>
                                     <th>Purchase Quanity</th>
-                                    <!-- <th>Select</th> -->
+                                    <th>Action</th>
+                                    <th style="display: none;">Select?</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item_detail in order.orderstockitem_set.all %}
+                                {% for item_detail in orderstockitem_list %}
                                 <tr>
                                     <td>{{ item_detail.stockitem.subgroup.group.name }}</td>
                                     <td>{{ item_detail.stockitem.subgroup.name }}</td>
@@ -59,14 +60,17 @@
                                         <!-- <label for="purchase_quantity">Purchase Quanity</label> -->
                                         <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" value="{{ item_detail.quantity }}" placeholder="Purchase Quanity" readonly="readonly">
                                     </td>
-                                    <!-- <td>
+                                    <td>
+                                        <a class="btn btn-danger" href="{% url 'core:delete_orderstockitem' item_detail.id %}" role="button">Delete</a>
+                                    </td>
+                                    <td style="display: none;">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="is_selected_{{item_detail.id}}" id="is_selected">
+                                            <input class="form-check-input" type="checkbox" name="is_selected_{{item_detail.id}}" id="is_selected" {% if remaining_quantity <= 0  %} disabled {% endif %}>
                                             <label class="form-check-label" for="is_selected">
                                             Select?
                                             </label>
                                     </div>
-                                    </td> -->
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>

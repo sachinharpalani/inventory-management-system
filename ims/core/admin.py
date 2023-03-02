@@ -5,6 +5,7 @@ from core.models import (
     StockItem, 
     Inventory, 
     Order, 
+    OrderStockItem
 )
 
 # Register your models here.
@@ -44,3 +45,9 @@ class OrderAdmin(admin.ModelAdmin):
         form.base_fields['created_by'].widget.can_delete_related = False
         form.base_fields['created_by'].widget.can_view_related = False
         return form
+    
+
+
+@admin.register(OrderStockItem)
+class OrderStockItemAdmin(admin.ModelAdmin):
+    pass

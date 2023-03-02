@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Q
 from core.constants import OrderStatus, TransactionStatus, TransactionMode
 
 # Create your models here.
@@ -44,7 +45,7 @@ class Inventory(models.Model):
     @property
     def remaining_quantity(self):
         ordered_items = OrderStockItem.objects.exclude(
-            order__status=OrderStatus.INVALID
+            Q(order__status=OrderStatus.INVALID) | Q(is_deleted=True)
         ).filter(stockitem=self.stockitem).values_list("quantity", flat=True)
         used_quantity = sum(list(ordered_items))
         return self.quantity - used_quantity
@@ -71,6 +72,14 @@ class Order(models.Model):
     customer_number = models.CharField(max_length=10, null=True, blank=True)
     remarks = models.TextField(null=True, blank=True)
 
+    def calculate_amount(self):
+        total_amount = 0
+        order_stock_items = OrderStockItem.objects.exclude(is_deleted=True).filter(order=self)
+        for obj in order_stock_items:
+            total_amount += (obj.stockitem.price * obj.quantity)
+        
+        return total_amount
+
     class Meta:
         db_table = "order"  
 
@@ -79,3 +88,4 @@ class OrderStockItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     stockitem = models.ForeignKey(StockItem, on_delete=models.CASCADE)
     quantity = models.IntegerField() 
+    is_deleted = models.BooleanField(default=False)

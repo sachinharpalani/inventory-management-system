@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import ListView
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import FormView, UpdateView, DeleteView
 from core.models import StockItem, Order, OrderStockItem
 from core.constants import TransactionMode, OrderStatus
 from django.shortcuts import redirect
@@ -69,6 +69,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["is_order_valid"] = context["order"].status != OrderStatus.INVALID
+        context["orderstockitem_list"] = OrderStockItem.objects.exclude(is_deleted=True).filter(order=context["order"])
         return context
     
 
@@ -89,7 +90,7 @@ class OrderModifyView(LoginRequiredMixin, TemplateView):
         context["order"] = order_obj
         context["payment_options"] = list(TransactionMode._value2member_map_.keys())
         context["status_options"] = list(OrderStatus._value2member_map_.keys())
-        context["stockitem_list"] = OrderStockItem.objects.filter(order=order_obj)
+        context["orderstockitem_list"] = OrderStockItem.objects.exclude(is_deleted=True).filter(order=order_obj)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -101,4 +102,16 @@ class OrderModifyView(LoginRequiredMixin, TemplateView):
         Order.objects.filter(pk=kwargs["pk"]).update(**order_data)    
         return redirect('core:view_order', pk=kwargs["pk"])
 
+
+class OrderStockItemDeleteView(View):
+    model = OrderStockItem
+    
+    def get(self, request, *args, **kwargs):
+        orderstockitem_obj = OrderStockItem.objects.get(id=kwargs['pk'])
+        orderstockitem_obj.is_deleted = True
+        orderstockitem_obj.save()
+
+        orderstockitem_obj.order.amount = orderstockitem_obj.order.calculate_amount()
+        orderstockitem_obj.order.save()
+        return redirect('core:view_order', orderstockitem_obj.order.id)
     
