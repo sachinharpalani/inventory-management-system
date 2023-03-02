@@ -9,15 +9,16 @@ from django.shortcuts import redirect
 from django_filters.views import FilterView
 from core.filters import OrderFilter
 from core.forms import OrderForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
 
-class StockItemListView(ListView):
+class StockItemListView(LoginRequiredMixin, ListView):
     model = StockItem
 
 
-class OrderStockItemView(TemplateView):
+class OrderStockItemView(LoginRequiredMixin, TemplateView):
     template_name = "core/create_order.html"
 
     def get_context_data(self, **kwargs):
@@ -36,7 +37,14 @@ class OrderStockItemView(TemplateView):
                     stockitem_id: value
                 })
         
-        order_data_columns = ["customer_name", "customer_number", "mode_of_payment", "amount", "remarks", "status"]
+        order_data_columns = [
+            "customer_name", 
+            "customer_number", 
+            "mode_of_payment", 
+            "amount", 
+            "remarks", 
+            "status"
+        ]
         order_data = {
             column: request.POST[column] for column in order_data_columns
         }
@@ -51,23 +59,20 @@ class OrderStockItemView(TemplateView):
                     "quantity": quantity
                 })    
         return redirect('core:view_order', pk=order_obj.id)
+    
 
-
-class OrderDetailView(DetailView):
+class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
 
 
-# class OrderListView(ListView):
-#     model = Order
-
-
-class OrderListView(FilterView):
+class OrderListView(LoginRequiredMixin, FilterView):
     model = Order
     template_name = "core/order_list_v2.html"
     filterset_class = OrderFilter
+    ordering = ["-created_on"]
 
 
-class OrderModifyView(TemplateView):
+class OrderModifyView(LoginRequiredMixin, TemplateView):
     template_name = "core/edit_order.html"
 
     def get_context_data(self, **kwargs):

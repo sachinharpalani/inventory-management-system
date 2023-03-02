@@ -105,16 +105,30 @@
 
 <script>
 
+    function toggleSubmitButton(){
+        var checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
+        if(checkedBoxes.length != 0){
+            $(':input[type="submit"]').prop('disabled', false);
+        }
+        else{
+            $(':input[type="submit"]').prop('disabled', true);
+        }
+    }
+
     function calculateTotalAmount(){
         var checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
             var totalAmount = 0 
             for(let i=0;i<checkedBoxes.length;i++){
+                
+                $(':input[type="submit"]').prop('disabled', false);
+
                 let stockitemId =  checkedBoxes[i].name.split("is_selected_").pop()
                 let priceElement = document.getElementById("price_"+stockitemId);
                 let price = parseInt(priceElement.innerText)
                 let quantityElement = document.getElementById("purchase_quantity_"+stockitemId);
                 let quantity = quantityElement.value
                 if(quantity == ""){
+                    quantityElement.value = 1;
                     quantity = 1;
                 }
                 else{
@@ -128,10 +142,14 @@
     $(document).ready(function() {
         // Call the dataTables jQuery plugin
         $('#dataTable').DataTable();
+
+        // Disable Submit at start
+        $(':input[type="submit"]').prop('disabled', true);
     
         // Logic to calculate total amount
         $('input[type=checkbox]').change(function() {
             calculateTotalAmount()
+            toggleSubmitButton();
         });
     });
 </script>

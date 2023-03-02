@@ -13,7 +13,6 @@ class OrderStockItemForm(forms.Form):
 
 
 class OrderForm(forms.ModelForm):
-
     class Meta:
         model = Order
         fields = "__all__"
