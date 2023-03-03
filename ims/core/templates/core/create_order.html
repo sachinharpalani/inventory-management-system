@@ -58,11 +58,11 @@
                                     <td>{{ remaining_quantity }}</td>
                                     <td>
                                         <!-- <label for="purchase_quantity">Purchase Quanity</label> -->
-                                        <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Purchase Quanity" {% if remaining_quantity <= 0 %} disabled {% endif %}>
+                                        <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Purchase Quanity" onchange="quantityChange.call(this)" {% if remaining_quantity <= 0 %} disabled {% endif %}>
                                     </td>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="is_selected_{{item_detail.id}}" id="is_selected" {% if remaining_quantity <= 0  %} disabled {% endif %} onclick="calculateTotalAmount()">
+                                            <input class="form-check-input" type="checkbox" name="is_selected_{{item_detail.id}}" id="is_selected" {% if remaining_quantity <= 0  %} disabled {% endif %} onclick="toggleItemSelect.call(this)">
                                             <label class="form-check-label" for="is_selected">
                                             Select?
                                             </label>
@@ -115,6 +115,8 @@
 
 <script>
 
+    var selectedItems = {}
+
     function toggleSubmitButton(checkedBoxes){
         if(checkedBoxes.length != 0){
             $(':input[type="submit"]').prop('disabled', false);
@@ -124,47 +126,66 @@
         }
     }
 
-    function calculateTotalAmount(){
-        var checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
-        var totalAmount = 0 
-        for(let i=0;i<checkedBoxes.length;i++){
-            
-            $(':input[type="submit"]').prop('disabled', false);
-
-            let stockitemId =  checkedBoxes[i].name.split("is_selected_").pop()
-            let priceElement = document.getElementById("price_"+stockitemId);
-            let price = parseInt(priceElement.innerText)
-            let quantityElement = document.getElementById("purchase_quantity_"+stockitemId);
-            let quantity = quantityElement.value
-            if(quantity == ""){
-                quantityElement.value = 1;
-                quantity = 1;
-            }
-            else{
-                quantity = parseInt(quantity)
-            }
-            totalAmount += (price*quantity)
+    function getItemAmount(itemId){
+        let priceElement = document.getElementById("price_"+itemId);
+        let price = parseInt(priceElement.innerText)
+        let quantityElement = document.getElementById("purchase_quantity_"+itemId);
+        let quantity = quantityElement.value
+        if(quantity == ""){
+            quantityElement.value = 1;
+            quantity = 1;
         }
-        document.getElementById("amount").value = totalAmount;
-
-        toggleSubmitButton(checkedBoxes)
-        
+        else{
+            quantity = parseInt(quantity)
+        }
+        return (price*quantity)
     }
+
+    function addToSelectedItems(itemId){
+        itemAmount = getItemAmount(itemId)
+        selectedItems[itemId] = itemAmount
+
+        calculateTotalAmount()
+    }
+
+    function removeFromSelectedItems(itemId){
+        if(selectedItems.hasOwnProperty(itemId)){
+            delete selectedItems[itemId]
+        }
+
+        calculateTotalAmount()
+    }
+
+    function calculateTotalAmount(){
+        amountOfEachItem = Object.values(selectedItems)
+        totalAmount = amountOfEachItem.reduce((a, b) => a + b, 0)
+
+        document.getElementById("amount").value = totalAmount;
+        return totalAmount
+
+    }
+
+    var toggleItemSelect = function(){
+        let itemId = this.name.split("is_selected_").pop()
+        if(this.checked == true){
+            // add to selectedItems
+            addToSelectedItems(itemId)
+        }
+        else{
+            // remove from selectedItems
+            removeFromSelectedItems(itemId)
+        }
+    }
+
+    var quantityChange = function(){
+        let itemId = this.name.split("purchase_quantity_").pop()
+        addToSelectedItems(itemId)
+    }
+    
 
     $(document).ready(function() {
         // Disable Submit at start
         $(':input[type="submit"]').prop('disabled', true);
-        
-        // // Logic to calculate total amount
-        // $('input[type=checkbox]').change(function() {
-        //     calculateTotalAmount();
-        //     toggleSubmitButton();
-        // });
-
-        // Update amount whenever purchase quanity changes
-        $('[id^=purchase_quantity_]').change(function(){
-            calculateTotalAmount();
-        });
     })
 </script>
 
