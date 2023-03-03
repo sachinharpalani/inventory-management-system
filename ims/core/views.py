@@ -94,12 +94,27 @@ class OrderModifyView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        order_data_columns = ["customer_name", "customer_number", "mode_of_payment", "remarks", "status"]
+        purchased_stockitems = []
+        for key, value in request.POST.items():
+            if "purchase_quantity_" in key and value:
+                stockitem_id = key.split("purchase_quantity_")[-1]
+                purchased_stockitems.append({
+                    stockitem_id: value
+                })
+
+        for purchased_stockitem in purchased_stockitems:
+            for orderstockitem_obj, quantity in purchased_stockitem.items():
+                orderstockitem_obj = OrderStockItem.objects.get(id=stockitem_id)
+                orderstockitem_obj.quantity = quantity
+                orderstockitem_obj.save()    
+
+        order_data_columns = ["customer_name", "customer_number", "mode_of_payment", "remarks", "status", "amount"]
         order_data = {
             column: request.POST[column] for column in order_data_columns
         }
         order_data["created_by"] = request.user
-        Order.objects.filter(pk=kwargs["pk"]).update(**order_data)    
+        Order.objects.filter(pk=kwargs["pk"]).update(**order_data) 
+           
         return redirect('core:view_order', pk=kwargs["pk"])
 
 
