@@ -18,12 +18,12 @@ class GroupAdmin(admin.ModelAdmin):
 
 @admin.register(SubGroup)
 class SubGroupAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("group", "name")
 
 
 @admin.register(StockItem)
 class StockItemAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("subgroup", "name", "price")
 
 
 @admin.register(Inventory)
