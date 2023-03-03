@@ -50,4 +50,4 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(OrderStockItem)
 class OrderStockItemAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("order", "stockitem", "quantity", "is_deleted")

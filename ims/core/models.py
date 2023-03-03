@@ -49,6 +49,9 @@ class Inventory(models.Model):
         ).filter(stockitem=self.stockitem).values_list("quantity", flat=True)
         used_quantity = sum(list(ordered_items))
         return self.quantity - used_quantity
+    
+    def __str__(self) -> str:
+        return f"{self.stockitem} -> {self.quantity}"
 
     class Meta:
         db_table = "inventory"  
@@ -72,6 +75,9 @@ class Order(models.Model):
     customer_number = models.CharField(max_length=10, null=True, blank=True)
     remarks = models.TextField(null=True, blank=True)
 
+    def __str__(self) -> str:
+        return f"{self.id} | {self.status} | {self.customer_name} | {self.customer_number}"
+
     def calculate_amount(self):
         total_amount = 0
         order_stock_items = OrderStockItem.objects.exclude(is_deleted=True).filter(order=self)
@@ -89,3 +95,4 @@ class OrderStockItem(models.Model):
     stockitem = models.ForeignKey(StockItem, on_delete=models.CASCADE)
     quantity = models.IntegerField() 
     is_deleted = models.BooleanField(default=False)
+
