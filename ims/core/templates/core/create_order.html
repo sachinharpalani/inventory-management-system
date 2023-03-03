@@ -117,8 +117,8 @@
 
     var selectedItems = {}
 
-    function toggleSubmitButton(checkedBoxes){
-        if(checkedBoxes.length != 0){
+    function toggleSubmitButton(){
+        if(Object.keys(selectedItems).length != 0){
             $(':input[type="submit"]').prop('disabled', false);
         }
         else{
@@ -161,6 +161,8 @@
         totalAmount = amountOfEachItem.reduce((a, b) => a + b, 0)
 
         document.getElementById("amount").value = totalAmount;
+        toggleSubmitButton()
+
         return totalAmount
 
     }
