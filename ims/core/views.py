@@ -3,13 +3,14 @@ from django.views.generic import ListView
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, UpdateView, DeleteView
-from core.models import StockItem, Order, OrderStockItem
+from core.models import StockItem, Order, OrderStockItem, Inventory
 from core.constants import TransactionMode, OrderStatus
 from django.shortcuts import redirect
 from django_filters.views import FilterView
 from core.filters import OrderFilter, StockItemFilter
 from core.forms import OrderForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+import json
 
 # Create your views here.
 
@@ -31,12 +32,15 @@ class OrderStockItemView(LoginRequiredMixin, TemplateView):
         return context
     
     def post(self, request, *args, **kwargs):
+        print(request.POST)
+        selected_items = json.loads(request.POST["selected_items"])
+        
         purchased_stockitems = []
-        for key, value in request.POST.items():
-            if "purchase_quantity_" in key and value:
-                stockitem_id = key.split("purchase_quantity_")[-1]
-                purchased_stockitems.append({
-                    stockitem_id: value
+        for key, value in selected_items.items():
+            stockitem_id = int(key)
+            quantity = value["quantity"]
+            purchased_stockitems.append({
+                    stockitem_id: quantity
                 })
         
         order_data_columns = [
@@ -130,3 +134,25 @@ class OrderStockItemDeleteView(View):
         orderstockitem_obj.order.save()
         return redirect('core:view_order', orderstockitem_obj.order.id)
     
+
+
+class DashboardView(TemplateView):
+    template_name = "core/dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        completed_orders = Order.objects.filter(status=OrderStatus.COMPLETED)
+        total_sales_done = sum(list(completed_orders.values_list("amount", flat=True)))
+        pending_orders = Order.objects.filter(status=OrderStatus.PENDING).count()
+
+        out_of_stock_items = 0
+        for item in Inventory.objects.all():
+            if item.remaining_quantity <= 0:
+                out_of_stock_items += 1
+
+        context["total_completed_orders"] = completed_orders.count()
+        context["total_sales_done"] = total_sales_done
+        context["pending_orders"] = pending_orders
+        context["out_of_stock_items"] = out_of_stock_items
+
+        return context

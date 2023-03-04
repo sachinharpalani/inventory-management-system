@@ -8,7 +8,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Create Order</h6>
     </div>
     <div class="card-body">
-        <form method="POST" action="" onsubmit="calculateTotalAmount()">
+        <form method="POST" action="" onsubmit="formSubmit.call(this)" id="CreateOrderForm">
             {% csrf_token %}
             <div class="form-row">
             <div class="form-group col-md-6">
@@ -92,6 +92,7 @@
                     {% endfor %}
                 </select>
             </div>
+            <input type="text" name="selected_items" id="selectedItems" hidden value=""></input>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
@@ -126,7 +127,7 @@
         }
     }
 
-    function getItemAmount(itemId){
+    function getQuantityAndPrice(itemId){
         let priceElement = document.getElementById("price_"+itemId);
         let price = parseInt(priceElement.innerText)
         let quantityElement = document.getElementById("purchase_quantity_"+itemId);
@@ -138,12 +139,18 @@
         else{
             quantity = parseInt(quantity)
         }
-        return (price*quantity)
+        return [price,quantity]
+    }
+
+    function calculateItemAmount(itemId, itemPrice, quantity){
+        itemAmount = quantity * itemPrice
+        return itemAmount
     }
 
     function addToSelectedItems(itemId){
-        itemAmount = getItemAmount(itemId)
-        selectedItems[itemId] = itemAmount
+        [itemPrice, quantity] = getQuantityAndPrice(itemId)
+        itemAmount = calculateItemAmount(itemId, itemPrice, quantity)
+        selectedItems[itemId] = {"totalAmount": itemAmount, "quantity": quantity}
 
         calculateTotalAmount()
     }
@@ -158,7 +165,7 @@
 
     function calculateTotalAmount(){
         amountOfEachItem = Object.values(selectedItems)
-        totalAmount = amountOfEachItem.reduce((a, b) => a + b, 0)
+        totalAmount = amountOfEachItem.reduce((total, obj) => obj.totalAmount + total, 0)
 
         document.getElementById("amount").value = totalAmount;
         toggleSubmitButton()
@@ -184,6 +191,12 @@
         addToSelectedItems(itemId)
     }
     
+    var formSubmit = function(){
+        var form = this;
+        var selectedItemsString = JSON.stringify(selectedItems)
+        document.getElementById("selectedItems").value = selectedItemsString
+        form.submit()
+    }
 
     $(document).ready(function() {
         // Disable Submit at start
