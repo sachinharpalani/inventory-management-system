@@ -51,9 +51,9 @@
                             {% for item_detail in stockitem_list %}
                                 {% with remaining_quantity=item_detail.inventory.first.remaining_quantity %}
                                 <tr {% if remaining_quantity <= 0 %} style="background-color: #E6E6FA" {% endif %}>
-                                    <td>{{ item_detail.subgroup.group.name }}</td>
-                                    <td>{{ item_detail.subgroup.name }}</td>
-                                    <td>{{ item_detail.name }}</td>
+                                    <td id="group_name_{{item_detail.id}}" >{{ item_detail.subgroup.group.name }}</td>
+                                    <td id="subgroup_name_{{item_detail.id}}">{{ item_detail.subgroup.name }}</td>
+                                    <td id="item_name_{{item_detail.id}}" >{{ item_detail.name }}</td>
                                     <td id="price_{{item_detail.id}}">{{ item_detail.price }}</td>
                                     <td>{{ remaining_quantity }}</td>
                                     <td>
@@ -71,6 +71,30 @@
                                 </tr>
                                 {% endwith %}
                             {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Selected Items List</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table class="table table-bordered" id="selectedItemsTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Group</th>
+                                    <th>Subgroup</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Purchase Quantity</th>
+                                    <th>Item Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selectedItemsBody">
                             </tbody>
                         </table>
                     </div>
@@ -107,14 +131,20 @@
 <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
 
 <script>
-    $(document).ready(function() {
+    // // $(document).ready(function() {
+    // //     // Call the dataTables jQuery plugin
+    // //     $('#dataTable').DataTable();
+    
+    // })
+</script>
+
+<script>
+
+$(document).ready(function() {
         // Call the dataTables jQuery plugin
         $('#dataTable').DataTable();
     
     })
-</script>
-
-<script>
 
     var selectedItems = {}
 
@@ -150,7 +180,14 @@
     function addToSelectedItems(itemId){
         [itemPrice, quantity] = getQuantityAndPrice(itemId)
         itemAmount = calculateItemAmount(itemId, itemPrice, quantity)
-        selectedItems[itemId] = {"totalAmount": itemAmount, "quantity": quantity}
+        selectedItems[itemId] = {
+            "group": document.getElementById("group_name_"+itemId).innerText,
+            "subgroup": document.getElementById("subgroup_name_"+itemId).innerText,
+            "name": document.getElementById("item_name_"+itemId).innerText,
+            "price": document.getElementById("price_"+itemId).innerText,
+            "totalAmount": itemAmount, 
+            "quantity": quantity
+        }
 
         calculateTotalAmount()
     }
@@ -158,9 +195,30 @@
     function removeFromSelectedItems(itemId){
         if(selectedItems.hasOwnProperty(itemId)){
             delete selectedItems[itemId]
+            document.getElementById("is_selected_"+itemId).checked = false;
         }
 
         calculateTotalAmount()
+    }
+
+
+    function refreshSelectedItemsTable(){
+        var tbody = document.getElementById("selectedItemsBody")
+        var currentSelectedItems = Object.entries(selectedItems)
+        tableValue = ""
+        for(const [itemId, itemData] of currentSelectedItems){
+            tableValue += "<tr>";
+            tableValue += "<td>" + itemData["group"] + "</td>";
+            tableValue += "<td>" + itemData["subgroup"] + "</td>";
+            tableValue += "<td>" + itemData["name"] + "</td>";
+            tableValue += "<td>" + itemData["price"] + "</td>";
+            tableValue += "<td>" + itemData["quantity"] + "</td>";
+            tableValue += "<td>" + itemData["totalAmount"] + "</td>";
+            tableValue += "</tr>";
+        }
+        // Flush table first
+        tbody.innerHTML = ""
+        tbody.innerHTML = tableValue
     }
 
     function calculateTotalAmount(){
@@ -168,6 +226,8 @@
         totalAmount = amountOfEachItem.reduce((total, obj) => obj.totalAmount + total, 0)
 
         document.getElementById("amount").value = totalAmount;
+
+        refreshSelectedItemsTable()
         toggleSubmitButton()
 
         return totalAmount
