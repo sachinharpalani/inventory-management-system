@@ -195,7 +195,6 @@ $(document).ready(function() {
     function removeFromSelectedItems(itemId){
         if(selectedItems.hasOwnProperty(itemId)){
             delete selectedItems[itemId]
-            document.getElementById("is_selected_"+itemId).checked = false;
         }
 
         calculateTotalAmount()
