@@ -39,10 +39,10 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>Buy Qty.</th>
+                                    <th>Purchase Quantity</th>
                                     <th>Name</th>
                                     <th>Price</th>
-                                    <th>Bal Qty.</th>
+                                    <th>Balance Quantity</th>
                                     
                                    
                                 </tr>
@@ -60,7 +60,7 @@
                                     </td>
                                     <td>
                                         <!-- <label for="purchase_quantity">Purchase Quanity</label> -->
-                                        <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Buy Qty." onchange="quantityChange.call(this)" {% if remaining_quantity <= 0 %} disabled {% endif %}>
+                                        <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Buy Qty" onchange="quantityChange.call(this)" {% if remaining_quantity <= 0 %} disabled {% endif %}>
                                     </td>
                                     <td id="item_name_{{item_detail.id}}" >{{ item_detail.subgroup.group.name }} | {{ item_detail.subgroup.name }} | {{ item_detail.name }}</td>
                                     <td id="price_{{item_detail.id}}">{{ item_detail.price }}</td>
