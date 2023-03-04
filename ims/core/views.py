@@ -98,6 +98,7 @@ class OrderModifyView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
+        print(request.POST)
         purchased_stockitems = []
         for key, value in request.POST.items():
             if "purchase_quantity_" in key and value:
@@ -107,7 +108,7 @@ class OrderModifyView(LoginRequiredMixin, TemplateView):
                 })
 
         for purchased_stockitem in purchased_stockitems:
-            for orderstockitem_obj, quantity in purchased_stockitem.items():
+            for stockitem_id, quantity in purchased_stockitem.items():
                 orderstockitem_obj = OrderStockItem.objects.get(id=stockitem_id)
                 orderstockitem_obj.quantity = quantity
                 orderstockitem_obj.save()    
