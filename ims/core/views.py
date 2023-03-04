@@ -11,6 +11,7 @@ from core.filters import OrderFilter, StockItemFilter
 from core.forms import OrderForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
+from collections import Counter
 
 # Create your views here.
 
@@ -146,14 +147,28 @@ class DashboardView(TemplateView):
         total_sales_done = sum(list(completed_orders.values_list("amount", flat=True)))
         pending_orders = Order.objects.filter(status=OrderStatus.PENDING).count()
 
-        out_of_stock_items = 0
+        out_of_stock_items = []
         for item in Inventory.objects.all():
             if item.remaining_quantity <= 0:
-                out_of_stock_items += 1
+                out_of_stock_items.append({
+                    "name": f"{item.stockitem.subgroup.group.name} | {item.stockitem.subgroup.name} | {item.stockitem.name}"
+                })
+                
+        transaction_breakup = []
+        total_order_count = completed_orders.count()
+        order_category = completed_orders.values_list("mode_of_payment", flat=True)
+        for mode, count in Counter(order_category).items():
+            transaction_breakup.append({
+                "name": mode,
+                "transaction_count": count,
+                "transaction_percentage": round((count/total_order_count) * 100)
+            })
 
         context["total_completed_orders"] = completed_orders.count()
         context["total_sales_done"] = total_sales_done
         context["pending_orders"] = pending_orders
-        context["out_of_stock_items"] = out_of_stock_items
+        context["out_of_stock_items"] = len(out_of_stock_items)
+        context["transaction_breakup"] = transaction_breakup
+        context["out_of_stock_breakup"] = out_of_stock_items
 
         return context
