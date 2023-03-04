@@ -33,21 +33,12 @@ class InventoryAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    raw_id_fields = ("items",)
-    
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(OrderAdmin, self).get_form(request, obj, **kwargs)
-
-        form.base_fields['created_by'].initial = request.user
-        form.base_fields['created_by'].disabled = True
-        form.base_fields['created_by'].widget.can_add_related = False
-        form.base_fields['created_by'].widget.can_change_related = False
-        form.base_fields['created_by'].widget.can_delete_related = False
-        form.base_fields['created_by'].widget.can_view_related = False
-        return form
-    
+    list_display = ("id","status", "mode_of_payment", "customer_name", "customer_number")
+    search_fields = ("id", "customer_name", "customer_number")
+    list_filter = ("status", "mode_of_payment")
 
 
 @admin.register(OrderStockItem)
 class OrderStockItemAdmin(admin.ModelAdmin):
     list_display = ("order", "stockitem", "quantity", "is_deleted")
+    search_fields = ("order__id", "stockitem__name", "order__customer_number", "order__customer_name")
