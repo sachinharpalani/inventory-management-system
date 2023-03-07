@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from common.views import HomepageView
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,3 +27,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view()),
     path("core/", include(("core.urls", "core"), namespace="core"))
 ]
+
+urlpatterns += staticfiles_urlpatterns()
