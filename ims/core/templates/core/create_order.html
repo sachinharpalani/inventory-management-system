@@ -50,17 +50,17 @@
                             <tbody>
                             {% for item_detail in stockitem_list %}
                                 {% with remaining_quantity=item_detail.inventory.first.remaining_quantity %}
-                                <tr {% if remaining_quantity <= 0 %} style="background-color: #E6E6FA" {% endif %}>
+                                <tr>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="is_selected_{{item_detail.id}}" id="is_selected" {% if remaining_quantity <= 0  %} disabled {% endif %} onclick="toggleItemSelect.call(this)">
+                                            <input class="form-check-input" type="checkbox" name="is_selected_{{item_detail.id}}" id="is_selected" onclick="toggleItemSelect.call(this)">
                                             <label class="form-check-label" for="is_selected">
                                             </label>
                                         </div>
                                     </td>
                                     <td>
                                         <!-- <label for="purchase_quantity">Purchase Quanity</label> -->
-                                        <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Buy Qty" onchange="quantityChange.call(this)" {% if remaining_quantity <= 0 %} disabled {% endif %}>
+                                        <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Buy Qty" onchange="quantityChange.call(this)">
                                     </td>
                                     <td id="item_name_{{item_detail.id}}" >{{ item_detail.subgroup.group.name }} | {{ item_detail.subgroup.name }} | {{ item_detail.name }}</td>
                                     <td id="price_{{item_detail.id}}">{{ item_detail.price }}</td>
