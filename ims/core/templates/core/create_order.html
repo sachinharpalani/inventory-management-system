@@ -39,17 +39,17 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>Purchase Quantity</th>
+                                    <!-- <th>Purchase Quantity</th> -->
                                     <th>Name</th>
                                     <th>Price</th>
-                                    <th>Balance Quantity</th>
+                                    <!-- <th>Balance Quantity</th> -->
                                     
                                    
                                 </tr>
                             </thead>
                             <tbody>
                             {% for item_detail in stockitem_list %}
-                                {% with remaining_quantity=item_detail.inventory.first.remaining_quantity %}
+                                <!-- {% with remaining_quantity=item_detail.inventory.first.remaining_quantity %} -->
                                 <tr>
                                     <td>
                                         <div class="form-check">
@@ -58,13 +58,12 @@
                                             </label>
                                         </div>
                                     </td>
-                                    <td>
-                                        <!-- <label for="purchase_quantity">Purchase Quanity</label> -->
+                                    <!-- <td>
                                         <input type="number" class="form-control" name="purchase_quantity_{{item_detail.id}}" id="purchase_quantity_{{item_detail.id}}" placeholder="Buy Qty" onchange="quantityChange.call(this)">
-                                    </td>
+                                    </td> -->
                                     <td id="item_name_{{item_detail.id}}" >{{ item_detail.subgroup.group.name }} | {{ item_detail.subgroup.name }} | {{ item_detail.name }}</td>
                                     <td id="price_{{item_detail.id}}">{{ item_detail.price }}</td>
-                                    <td>{{ remaining_quantity }}</td>
+                                    <!-- <td>{{ remaining_quantity }}</td> -->
                                 </tr>
                                 {% endwith %}
                             {% endfor %}
@@ -156,13 +155,13 @@ $(document).ready(function() {
         let priceElement = document.getElementById("price_"+itemId);
         let price = parseInt(priceElement.innerText)
         let quantityElement = document.getElementById("purchase_quantity_"+itemId);
-        let quantity = quantityElement.value
-        if(quantity == ""){
-            quantityElement.value = 1;
+        //let quantity = quantityElement.value
+        if(quantityElement == null){
+            //quantityElement.value = 1;
             quantity = 1;
         }
         else{
-            quantity = parseInt(quantity)
+            quantity = parseInt(quantityElement.value)
         }
         return [price,quantity]
     }
@@ -176,6 +175,7 @@ $(document).ready(function() {
         [itemPrice, quantity] = getQuantityAndPrice(itemId)
         itemAmount = calculateItemAmount(itemId, itemPrice, quantity)
         selectedItems[itemId] = {
+            "id": itemId,
             "name": document.getElementById("item_name_"+itemId).innerText,
             "price": document.getElementById("price_"+itemId).innerText,
             "totalAmount": itemAmount, 
@@ -202,7 +202,7 @@ $(document).ready(function() {
             tableValue += "<tr>";
             tableValue += "<td>" + itemData["name"] + "</td>";
             tableValue += "<td>" + itemData["price"] + "</td>";
-            tableValue += "<td>" + itemData["quantity"] + "</td>";
+            tableValue += `<td><input type='number' class='form-control' name='purchase_quantity_${itemData['id']}' id='purchase_quantity_${itemData['id']}' value='${itemData['quantity']}' placeholder='Buy Qty' onchange='quantityChange.call(this)'></td>`;
             tableValue += "<td>" + itemData["totalAmount"] + "</td>";
             tableValue += "</tr>";
         }
