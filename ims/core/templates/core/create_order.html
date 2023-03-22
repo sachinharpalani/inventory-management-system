@@ -86,6 +86,7 @@
                                     <th>Price</th>
                                     <th>Purchase Quantity</th>
                                     <th>Item Amount</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="selectedItemsBody">
@@ -95,8 +96,8 @@
                 </div>
             </div>
             <div class="form-group">
-            <label for="amount">Amount</label>
-            <input type="text" class="form-control" id="amount" name="amount" placeholder="Amount is auto calculated" readonly="readonly">
+                <label for="amount">Amount</label>
+                <input type="text" class="form-control" id="amount" name="amount" placeholder="Amount is auto calculated" readonly="readonly">
             </div>
             <div class="form-group">
                 <label for="remarks">Remarks</label>
@@ -204,6 +205,7 @@ $(document).ready(function() {
             tableValue += "<td>" + itemData["price"] + "</td>";
             tableValue += `<td><input type='number' class='form-control' name='purchase_quantity_${itemData['id']}' id='purchase_quantity_${itemData['id']}' value='${itemData['quantity']}' placeholder='Buy Qty' onchange='quantityChange.call(this)'></td>`;
             tableValue += "<td>" + itemData["totalAmount"] + "</td>";
+            tableValue += `<td><a class="btn btn-danger" onclick='removeFromSelectedItemList(${itemData['id']})' role="button">Delete</a></td>`;
             tableValue += "</tr>";
         }
         // Flush table first
@@ -222,6 +224,14 @@ $(document).ready(function() {
 
         return totalAmount
 
+    }
+
+    function removeFromSelectedItemList(itemId){
+        removeFromSelectedItems(itemId)
+        let selectElements = document.getElementsByName("is_selected_"+itemId);
+        if(selectElements.length == 1){
+            selectElements[0].checked = false;
+        }
     }
 
     var toggleItemSelect = function(){
