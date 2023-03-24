@@ -48,7 +48,9 @@ class OrderStockItemView(LoginRequiredMixin, TemplateView):
             "customer_name", 
             "customer_number", 
             "mode_of_payment", 
-            "amount", 
+            "amount",
+            "change_amount",
+            "total_order_value", 
             "remarks", 
             "status"
         ]
@@ -114,7 +116,7 @@ class OrderModifyView(LoginRequiredMixin, TemplateView):
                 orderstockitem_obj.quantity = quantity
                 orderstockitem_obj.save()    
 
-        order_data_columns = ["customer_name", "customer_number", "mode_of_payment", "remarks", "status", "amount"]
+        order_data_columns = ["customer_name", "customer_number", "mode_of_payment", "remarks", "status", "amount", "change_amount", "total_order_value"]
         order_data = {
             column: request.POST[column] for column in order_data_columns
         }
@@ -133,6 +135,7 @@ class OrderStockItemDeleteView(View):
         orderstockitem_obj.save()
 
         orderstockitem_obj.order.amount = orderstockitem_obj.order.calculate_amount()
+        orderstockitem_obj.order.total_order_value = orderstockitem_obj.order.amount + orderstockitem_obj.order.change_amount
         orderstockitem_obj.order.save()
         return redirect('core:view_order', orderstockitem_obj.order.id)
     
@@ -153,7 +156,7 @@ class DashboardView(TemplateView):
                 out_of_stock_items.append({
                     "name": f"{item.stockitem.subgroup.group.name} | {item.stockitem.subgroup.name} | {item.stockitem.name}"
                 })
-                
+
         transaction_breakup = []
         total_order_count = completed_orders.count()
         order_category = completed_orders.values_list("mode_of_payment", flat=True)

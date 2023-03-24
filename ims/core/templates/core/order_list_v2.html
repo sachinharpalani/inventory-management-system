@@ -24,7 +24,7 @@
                         <th>Customer Name</th>
                         <th>Customer Mobile</th>
                         <th>Status</th>
-                        <th>Order Amount</th>
+                        <th>Total Order Value</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -36,7 +36,7 @@
                         <td>{{ item_detail.customer_name }}</td>
                         <td>{{ item_detail.customer_number }}</td>
                         <td>{{ item_detail.status }}</td>
-                        <td>{{ item_detail.amount }}</td>
+                        <td>{{ item_detail.total_order_value }}</td>
                         <td><a class="btn btn-primary" href="{% url 'core:view_order' item_detail.id %}" role="button">View</a></td>
                     </tr>
                     {% endfor %}

@@ -1,6 +1,17 @@
 {% extends "common/index.html" %}
 {% load static %}
 
+{% block header_css %}
+
+<style>
+    .container-fluid {
+        padding-left: 0.1rem !important; 
+        padding-right: 0.1rem !important;
+    }
+</style>
+
+{% endblock header_css %}
+
 {% block main_content %}
 
 <div class="card shadow mb-4">
@@ -98,6 +109,14 @@
             <div class="form-group">
                 <label for="amount">Amount</label>
                 <input type="text" class="form-control" id="amount" name="amount" placeholder="Amount is auto calculated" readonly="readonly">
+            </div>
+            <div class="form-group">
+                <label for="amount">Change Amount</label>
+                <input type="text" class="form-control" id="change_amount" name="change_amount" value="0" onchange="refreshTotalOrderValue();">
+            </div>
+            <div class="form-group">
+                <label for="amount">Total Order Value</label>
+                <input type="text" class="form-control" id="total_order_value" name="total_order_value" placeholder="Total Order Value is auto calculated" readonly="readonly">
             </div>
             <div class="form-group">
                 <label for="remarks">Remarks</label>
@@ -220,6 +239,7 @@ $(document).ready(function() {
         document.getElementById("amount").value = totalAmount;
 
         refreshSelectedItemsTable()
+        refreshTotalOrderValue()
         toggleSubmitButton()
 
         return totalAmount
@@ -232,6 +252,15 @@ $(document).ready(function() {
         if(selectElements.length == 1){
             selectElements[0].checked = false;
         }
+    }
+
+    function refreshTotalOrderValue(){
+        let changeAmount = document.getElementById("change_amount");
+        if(changeAmount.value == ""){
+            changeAmount.value = 0;
+        }
+        let amount = parseInt(document.getElementById("amount").value)
+        document.getElementById("total_order_value").value = parseInt(changeAmount.value) + amount;
     }
 
     var toggleItemSelect = function(){

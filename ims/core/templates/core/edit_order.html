@@ -79,8 +79,16 @@
                 </div>
             </div>
             <div class="form-group">
-            <label for="amount">Amount</label>
-            <input type="text" class="form-control" id="amount" name="amount" placeholder="Amount is auto calculated" value="{{ order.amount }}" readonly="readonly">
+                <label for="amount">Amount</label>
+                <input type="text" class="form-control" id="amount" name="amount" placeholder="Amount is auto calculated" value="{{ order.amount }}" readonly="readonly">
+            </div>
+            <div class="form-group">
+                <label for="amount">Change Amount</label>
+                <input type="text" class="form-control" id="change_amount" name="change_amount"  value="{{ order.change_amount }}">
+            </div>
+            <div class="form-group">
+                <label for="amount">Total Order Value</label>
+                <input type="text" class="form-control" id="total_order_value" name="total_order_value" value="{{ order.total_order_value }}" readonly="readonly">
             </div>
             <div class="form-group">
                 <label for="remarks">Remarks</label>
@@ -125,6 +133,15 @@
             document.getElementById("amount").value = totalAmount;
     }
 
+    function refreshTotalOrderValue(){
+        let changeAmount = document.getElementById("change_amount");
+        if(changeAmount.value == ""){
+            changeAmount.value = 0;
+        }
+        let amount = parseInt(document.getElementById("amount").value)
+        document.getElementById("total_order_value").value = parseInt(changeAmount.value) + amount;
+    }
+
     $(document).ready(function() {
     
         // Logic to calculate total amount
@@ -135,6 +152,11 @@
         // Update amount whenever purchase quanity changes
         $('[id^=purchase_quantity_]').change(function(){
             calculateTotalAmount();
+        });
+
+        // Update total order value when change amount changes.
+        $('[id=change_amount]').change(function(){
+            refreshTotalOrderValue();
         });
     });
 </script>

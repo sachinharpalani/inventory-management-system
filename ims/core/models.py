@@ -63,6 +63,8 @@ class Order(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     items = models.ManyToManyField(StockItem, through="OrderStockItem")
     amount = models.IntegerField()
+    change_amount = models.IntegerField(default=0)
+    total_order_value = models.IntegerField()
     status = models.CharField(
         max_length=255,
         choices=OrderStatus.choices, 
