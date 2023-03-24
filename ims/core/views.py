@@ -147,7 +147,7 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         completed_orders = Order.objects.filter(status=OrderStatus.COMPLETED)
-        total_sales_done = sum(list(completed_orders.values_list("amount", flat=True)))
+        total_sales_done = sum(list(completed_orders.values_list("total_order_value", flat=True)))
         pending_orders = Order.objects.filter(status=OrderStatus.PENDING).count()
 
         out_of_stock_items = []
