@@ -220,8 +220,8 @@ $(document).ready(function() {
         tableValue = ""
         for(const [itemId, itemData] of currentSelectedItems){
             tableValue += "<tr>";
-            tableValue += "<td>" + itemData["name"] + "</td>";
-            tableValue += "<td>" + itemData["price"] + "</td>";
+            tableValue += `<td id='item_name_${itemData['id']}'>` + itemData["name"] + "</td>";
+            tableValue += `<td id='price_${itemData['id']}'>` + itemData["price"] + "</td>";
             tableValue += `<td><input type='number' class='form-control' name='purchase_quantity_${itemData['id']}' id='purchase_quantity_${itemData['id']}' value='${itemData['quantity']}' placeholder='Buy Qty' onchange='quantityChange.call(this)'></td>`;
             tableValue += "<td>" + itemData["totalAmount"] + "</td>";
             tableValue += `<td><a class="btn btn-danger" onclick='removeFromSelectedItemList(${itemData['id']})' role="button">Delete</a></td>`;
